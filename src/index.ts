@@ -1,5 +1,6 @@
 import './scss/styles.scss';
 
+<<<<<<< HEAD
 import { EventEmitter } from './components/base/events';
 import { Api } from './components/base/api';
 import {API_URL, CDN_URL} from "./utils/constants";
@@ -12,6 +13,17 @@ const api = new Api(CDN_URL);
 
 // По чуть-чуть
 
+=======
+interface IBasketModel {
+    items: Map<string, number>;
+    add(id: string): void;
+    remove(id: string): void;
+}
+
+interface IEventEmitter {
+    emit: (event: string, data: unknown) => void;
+}
+>>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
 
 class BasketModel implements IBasketModel {
     items: Map<string, number> = new Map();
@@ -35,7 +47,27 @@ class BasketModel implements IBasketModel {
     };
 }
 
+<<<<<<< HEAD
 
+=======
+interface IProduct {
+    id: string;
+    title: string;
+}
+interface CatalogModel {
+    items: IProduct[];
+    setItems(items: IProduct[]): void; //чтобы установить после загрузки из апи
+    getProduct(id: string): IProduct;//чтобы получить при рендере списков
+}
+
+interface IViewConstructor {
+    new(container: HTMLElement, events?: IEventEmitter): IView; //на входе контейнер, в него выводить
+}
+
+interface IView {
+    render(data?: object): HTMLElement;//Устанавливаем данные, возвращаем контейнер
+}
+>>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
 
 class BasketItemView implements IView {
     // элементы внутри контейнера
@@ -71,7 +103,10 @@ class BasketItemView implements IView {
     }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
 class BasketView implements IView {
     constructor(protected container: HTMLElement) { }
     render(data: { items: HTMLElement[] }) {
@@ -82,11 +117,19 @@ class BasketView implements IView {
     }
 }
 
+<<<<<<< HEAD
 // const api = new Api('asd');
 // const events = new EventEmitter();
 const basketView = new BasketView(document.querySelector('.basket'));
 const basketModel = new BasketModel(events);
 // const catalogModel = new CatalogModel(events);
+=======
+const api = new ShopAPI();
+const events = new EventEmitter();
+const basketView = new BasketView(document.querySelector('.basket'));
+const basketModel = new BasketModel(events);
+const catalogModel = new CatalogModel(events);
+>>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
 
 //можно собрать в функции или классы отдельные экраны с логикой их формариования
 function renderBasket(items: string[]) {
@@ -98,6 +141,7 @@ function renderBasket(items: string[]) {
     );
 }
 
+<<<<<<< HEAD
 // //при изменении рендерим
 // events.on('basket:change', (event: { items: string[] }) => {
 //     // выводим куда-то
@@ -113,6 +157,23 @@ function renderBasket(items: string[]) {
 // events.on('ui:basket-remove', (event: { id: string }) => {
 //     basketModel.remove(event.id);
 // });
+=======
+//при изменении рендерим
+events.on('basket:change', (event: { items: string[] }) => {
+    // выводим куда-то
+    // отобразить изменения через отображение
+    renderBasket(event.items);
+});
+
+//при действиях изменяем модель, а после этого случится рендер
+events.on('ui:basket-add', (event: { id: string }) => {
+    basketModel.add(event.id);
+});
+
+events.on('ui:basket-remove', (event: { id: string }) => {
+    basketModel.remove(event.id);
+});
+>>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
 
 api.getCatalog()
     .then(catalogModel.setItems.bind(catalogModel))
