@@ -1,14 +1,13 @@
-<<<<<<< HEAD
 // Типов данных с которыми будете работать в приложении. Как минимум у вас
 // должны быть описаны объекты приходящие к вам через API и
 // объекты выводимые на экране. Ваши модели в итоге должны будут
 // трансформировать один тип в другой.
 
-// Интерфейс API-клиента
-// Интерфейсы модели данных
+// +Интерфейс API-клиента
+// +Интерфейсы модели данных
 // Интерфейсы отображений
-// Интерфейсы базовых классов
-// Перечисление событий и их интерфейсы (если используете брокер)
+// +Интерфейсы базовых классов
+// +Перечисление событий и их интерфейсы (если используете брокер)
 // Любые другие типы и интерфейсы если вы заложили их в архитектуру
 type payment_method = 'online' | 'After receiving';
 
@@ -50,33 +49,9 @@ interface IBasket {
 }
 
 
-//_----------------___----------------
-
-
-interface IEventEmitter {
-    on<T extends object>(event: string, callback: (data: T) => void): void;
-    emit<T extends object>(event: string, data?: T): void;
-    trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
-}
 
 
 
-interface IViewConstructor {
-    new(container: HTMLElement, events?: IEventEmitter): IView; //на входе контейнер, в него выводить
-}
 
-interface IView {
-    render(data?: object): HTMLElement;//Устанавливаем данные, возвращаем контейнер
-}
-type Subscriber = Function;
 
-type EmitterEvent = {
-    eventName: string,
-    data: unknown
-};
-=======
-type Product_List={
-total:number;//Количество элементов
 
-}
->>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
