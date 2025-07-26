@@ -9,49 +9,66 @@
 // +Интерфейсы базовых классов
 // +Перечисление событий и их интерфейсы (если используете брокер)
 // Любые другие типы и интерфейсы если вы заложили их в архитектуру
-type payment_method = 'online' | 'After receiving';
+import { Product } from '../components/AppData';
 
-interface IProduct {
-    id: string;
-    title: string;
-    category: string;
-    img: URL;
-    cost: number;
-    description: string;
+export type CategoryType =
+	| 'другое'
+	| 'софт-скил'
+	| 'дополнительное'
+	| 'кнопка'
+	| 'хард-скил';
+
+export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
+
+export type CategoryMapping = {
+	[Key in CategoryType]: string;
+};
+
+export interface ApiResponse {
+	items: IProduct[];
 }
 
-interface ICustomer {
-    payment_method: payment_method;
-    delivery_address: string;
-    email: string;
-    phone_number: string;
-    setPayment(payment_method: payment_method): void;
-    setAddress(delivery_address: string): void;
-    setEmail(email: string): void;
-    setPhone(phone_number: string): void;
-    clearData(): void;
+export interface IProduct {
+	id: string;
+	title: string;
+	category: CategoryType;
+	image: string;
+	price: number | null;
+	description: string;
+	selected: boolean;
 }
 
-interface ICatalog {
-    items: IProduct[];
-    setItems(items: IProduct[]): void; //чтобы установить после загрузки из апи
-    getProduct(id: string): IProduct;//чтобы получить при рендере списков
+export interface IAppState {
+	basket: Product[];
+	catalog: Product[];
+	order: IOrder;
+	formErrors: FormErrors;
+	addToBasket(value: Product): void;
+	deleteFromBasket(id: string): void;
+	clearBasket(): void;
+	getBasketAmount(): number;
+	getTotalBasketPrice(): number;
+	setItems(): void;
+	setOrderForm(field: keyof IOrderForm, value: string): void;
+	validateContacts(): boolean;
+	validateOrder(): boolean;
+	refreshOrder(): boolean;
+	setCatalog(items: IProduct[]): void;
+	resetSelected(): void;
 }
 
-interface IBasket {
-    items: Map<string, number>;
-    get_total_cost(): number;
-    add(id: string): void;
-    remove(id: string): void;
-    clear(): void;
-    get_list(): Map<string, number>;
-    return_total_cost(): number;
+export interface IOrder {
+	items: string[];
+	payment: string;
+	total: number;
+	address: string;
+	email: string;
+	phone: string;
 }
 
-
-
-
-
-
-
-
+export interface IOrderForm {
+	payment: string;
+	address: string;
+	email: string;
+	phone: string;
+}

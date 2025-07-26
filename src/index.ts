@@ -1,180 +1,199 @@
 import './scss/styles.scss';
-
-<<<<<<< HEAD
+import { Api, ApiListResponse } from './components/base/api';
 import { EventEmitter } from './components/base/events';
-import { Api } from './components/base/api';
-import {API_URL, CDN_URL} from "./utils/constants";
+import { ensureElement, cloneTemplate } from './utils/utils';
+import { AppState, Product } from './components/AppData';
+import { Page } from './components/Page';
+import { Modal } from './components/common/Modal';
+import { Basket, CatalogItemBasket } from './components/Basket';
+import { Order } from './components/Order';
+import { Contacts } from './components/Contacts';
+import { Success } from './components/Success';
+import { CatalogItem, CatalogItemPreview } from './components/Card';
+import { ApiResponse, IOrderForm, IProduct } from './types/index';
+import { API_URL } from './utils/constants';
 
-
+const api = new Api(API_URL);
+console.log(api);
 const events = new EventEmitter();
-const api = new Api(CDN_URL);
+const appData = new AppState({}, events);
+const page = new Page(document.body, events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
+const catalogProductTemplate =
+	ensureElement<HTMLTemplateElement>('#card-catalog');
+const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
+const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
+const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-
-// По чуть-чуть
-
-=======
-interface IBasketModel {
-    items: Map<string, number>;
-    add(id: string): void;
-    remove(id: string): void;
-}
-
-interface IEventEmitter {
-    emit: (event: string, data: unknown) => void;
-}
->>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
-
-class BasketModel implements IBasketModel {
-    items: Map<string, number> = new Map();
-    constructor(protected events: IEventEmitter) { }
-    add(id: string): void {
-        if (!this.items.has(id)) this.items.set(id, 0);
-        this.items.set(id, this.items.get(id)! + 1);
-        this._changed();
-    }
-    remove(id: string): void {
-        if (!this.items.has(id)) return;
-        if (this.items.get(id)! > 0) {
-            this.items.set(id, this.items.get(id)! - 1);
-            if (this.items.get(id)! === 0) this.items.delete(id);
-        }
-        this._changed();
-    }
-
-    protected _changed() {//метод генерирует уведомление об изменении
-        this.events.emit('basket:change', { items: Array.from(this.items.keys()) });
-    };
-}
-
-<<<<<<< HEAD
-
-=======
-interface IProduct {
-    id: string;
-    title: string;
-}
-interface CatalogModel {
-    items: IProduct[];
-    setItems(items: IProduct[]): void; //чтобы установить после загрузки из апи
-    getProduct(id: string): IProduct;//чтобы получить при рендере списков
-}
-
-interface IViewConstructor {
-    new(container: HTMLElement, events?: IEventEmitter): IView; //на входе контейнер, в него выводить
-}
-
-interface IView {
-    render(data?: object): HTMLElement;//Устанавливаем данные, возвращаем контейнер
-}
->>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
-
-class BasketItemView implements IView {
-    // элементы внутри контейнера
-    protected title: HTMLSpanElement;
-    protected addButton: HTMLButtonElement;
-    protected removeButton: HTMLButtonElement;
-    // данные, которые сохраняем на будущее
-    protected id: string | null = null;
-    constructor(protected container: HTMLElement, protected events: IEventEmitter) {
-        // инициализируем, чтобы не искать повторно
-        this.title = container.querySelector('.basket-item__title') as HTMLSpanElement;
-        this.addButton = container.querySelector('.basket-item__add') as HTMLButtonElement;
-        this.removeButton = container.querySelector('.basket-item__remove') as HTMLButtonElement;
-        //устанавливаем события
-        this.addButton.addEventListener('click', () => {
-            //генерируем событие в нашем брокере
-            this.events.emit('ui:basket-add', { id: this.id });
-        });
-        this.removeButton.addEventListener('click', () => {
-            //генерируем событие в нашем брокере
-            this.events.emit('ui:basket-remove', { id: this.id });
-        });
-    }
-
-    render(data: { id: string, title: string }) {
-        if (data) {
-            //если есть новые данные, то запомним их
-            this.id = data.id;
-            //и выведем в интерфейс
-            this.title.textContent = data.title;
-        }
-        return this.container;
-    }
-}
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
-class BasketView implements IView {
-    constructor(protected container: HTMLElement) { }
-    render(data: { items: HTMLElement[] }) {
-        if (data) {
-            this.container.replaceChildren(...data.items);
-        }
-        return this.container;
-    }
-}
-
-<<<<<<< HEAD
-// const api = new Api('asd');
-// const events = new EventEmitter();
-const basketView = new BasketView(document.querySelector('.basket'));
-const basketModel = new BasketModel(events);
-// const catalogModel = new CatalogModel(events);
-=======
-const api = new ShopAPI();
-const events = new EventEmitter();
-const basketView = new BasketView(document.querySelector('.basket'));
-const basketModel = new BasketModel(events);
-const catalogModel = new CatalogModel(events);
->>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
-
-//можно собрать в функции или классы отдельные экраны с логикой их формариования
-function renderBasket(items: string[]) {
-    basketView.render(
-        items.map(id => {
-            const itemView = new BasketItemView(events);
-            return itemView.render(catalogModel.getProduct(id));
-        })
-    );
-}
-
-<<<<<<< HEAD
-// //при изменении рендерим
-// events.on('basket:change', (event: { items: string[] }) => {
-//     // выводим куда-то
-//     // отобразить изменения через отображение
-//     renderBasket(event.items);
-// });
-
-// //при действиях изменяем модель, а после этого случится рендер
-// events.on('ui:basket-add', (event: { id: string }) => {
-//     basketModel.add(event.id);
-// });
-
-// events.on('ui:basket-remove', (event: { id: string }) => {
-//     basketModel.remove(event.id);
-// });
-=======
-//при изменении рендерим
-events.on('basket:change', (event: { items: string[] }) => {
-    // выводим куда-то
-    // отобразить изменения через отображение
-    renderBasket(event.items);
+const basket = new Basket('basket', cloneTemplate(basketTemplate), events);
+const order = new Order('order', cloneTemplate(orderTemplate), events);
+const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
+const success = new Success('order-success', cloneTemplate(successTemplate), {
+	onClick: () => {
+		events.emit('modal:close');
+		modal.close();
+	},
 });
 
-//при действиях изменяем модель, а после этого случится рендер
-events.on('ui:basket-add', (event: { id: string }) => {
-    basketModel.add(event.id);
+api
+	.get('/product')
+	.then((res: ApiResponse) => {
+		appData.setCatalog(res.items as IProduct[]);
+	})
+	.catch((err) => {
+		console.error(err);
+	});
+
+events.on('items:changed', () => {
+	page.catalog = appData.catalog.map((item) => {
+		const product = new CatalogItem(cloneTemplate(catalogProductTemplate), {
+			onClick: () => events.emit('card:select', item),
+		});
+		return product.render({
+			id: item.id,
+			title: item.title,
+			image: item.image,
+			category: item.category,
+			price: item.price,
+		});
+	});
 });
 
-events.on('ui:basket-remove', (event: { id: string }) => {
-    basketModel.remove(event.id);
+events.on('card:select', (item: Product) => {
+	page.locked = true;
+	const product = new CatalogItemPreview(cloneTemplate(cardPreviewTemplate), {
+		onClick: () => {
+			events.emit('card:toBasket', item);
+		},
+	});
+	modal.render({
+		content: product.render({
+			id: item.id,
+			title: item.title,
+			image: item.image,
+			category: item.category,
+			description: item.description,
+			price: item.price,
+			selected: item.selected,
+		}),
+	});
 });
->>>>>>> 77e5cd6aedef6c32db1a600a47da5632f31aac2b
 
-api.getCatalog()
-    .then(catalogModel.setItems.bind(catalogModel))
-    .catch(err => console.error(err));
+events.on('card:toBasket', (item: Product) => {
+	item.selected = true;
+	appData.addToBasket(item);
+	page.counter = appData.getBasketAmount();
+	modal.close();
+});
+
+events.on('basket:open', () => {
+	page.locked = true;
+	const basketItems = appData.basket.map((item, index) => {
+		const catalogItem = new CatalogItemBasket(
+			'card',
+			cloneTemplate(cardBasketTemplate),
+			{
+				onClick: () => events.emit('basket:delete', item),
+			}
+		);
+		return catalogItem.render({
+			title: item.title,
+			price: item.price,
+			index: index + 1,
+		});
+	});
+	modal.render({
+		content: basket.render({
+			list: basketItems,
+			price: appData.getTotalBasketPrice(),
+		}),
+	});
+});
+
+events.on('basket:delete', (item: Product) => {
+	appData.deleteFromBasket(item.id);
+	item.selected = false;
+	basket.price = appData.getTotalBasketPrice();
+	page.counter = appData.getBasketAmount();
+	basket.refreshIndex();
+	if (!appData.basket.length) {
+		basket.disableButton();
+	}
+});
+
+events.on('basket:order', () => {
+	modal.render({
+		content: order.render({
+			address: '',
+			valid: false,
+			errors: [],
+		}),
+	});
+});
+
+events.on('orderFormErrors:change', (errors: Partial<IOrderForm>) => {
+	const { payment, address } = errors;
+	order.valid = !payment && !address;
+	order.errors = Object.values({ payment, address })
+		.filter((i) => !!i)
+		.join('; ');
+});
+
+events.on('contactsFormErrors:change', (errors: Partial<IOrderForm>) => {
+	const { email, phone } = errors;
+	contacts.valid = !email && !phone;
+	contacts.errors = Object.values({ phone, email })
+		.filter((i) => !!i)
+		.join('; ');
+});
+
+events.on(
+	'orderInput:change',
+	(data: { field: keyof IOrderForm; value: string }) => {
+		appData.setOrderField(data.field, data.value);
+	}
+);
+
+events.on('order:submit', () => {
+	appData.order.total = appData.getTotalBasketPrice();
+	appData.setItems();
+	modal.render({
+		content: contacts.render({
+			valid: false,
+			errors: [],
+		}),
+	});
+});
+
+events.on('contacts:submit', () => {
+	api
+		.post('/order', appData.order)
+		.then((res) => {
+			events.emit('order:success', res);
+			appData.clearBasket();
+			appData.refreshOrder();
+			order.disableButtons();
+			page.counter = 0;
+			appData.resetSelected();
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
+
+events.on('order:success', (res: ApiListResponse<string>) => {
+	modal.render({
+		content: success.render({
+			description: res.total,
+		}),
+	});
+});
+
+events.on('modal:close', () => {
+	page.locked = false;
+	appData.refreshOrder();
+});
